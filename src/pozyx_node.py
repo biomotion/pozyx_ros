@@ -15,7 +15,7 @@ class pozyx_node(object):
 
         self.anchors = rospy.get_param("~anchors")
         print self.anchors
-        self.pub_poses = rospy.Publisher('~pozyx_pose', PoseStamped, queue_size=1)
+        self.pub_poses = rospy.Publisher('~local_tag_pose', PoseStamped, queue_size=1)
 
         self.pozyx = PozyxSerial(get_first_pozyx_serial_port())
         self.pozyx.printDeviceInfo()

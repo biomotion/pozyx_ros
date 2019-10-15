@@ -6,11 +6,11 @@ from geometry_msgs.msg import PoseStamped
 class visualizer(object):
     def __init__(self):
         self.pub_marker = rospy.Publisher("~pose_visualizer", Marker, queue_size=1)
-        self.sub_pose = rospy.Subscriber("/pozyx_node/pozyx_pose", PoseStamped, self.pose_cb, queue_size=1)
+        self.sub_pose = rospy.Subscriber("/pozyx_node/local_tag_pose", PoseStamped, self.pose_cb, queue_size=1)
     def pose_cb(self, pose_msg):
         #print "pose cb"
         marker_msg = Marker()
-        marker_msg.header.frame_id = "map"
+        marker_msg.header.frame_id = "uwb_pose"
         marker_msg.header.stamp = rospy.Time()
         marker_msg.ns = "my_namespace"
         marker_msg.id = 0
