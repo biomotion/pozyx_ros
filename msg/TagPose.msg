@@ -1,0 +1,3 @@
+uint16 tag_id
+geometry_msgs/PoseStamped pose
+float64 distance
