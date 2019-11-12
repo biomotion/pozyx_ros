@@ -1,9 +1,10 @@
 <launch>
     <arg name="pkg_name" value="pozyx_ros"/>
-    <arg name="node_name" default="pozyx_node"/>
+    <arg name="node_name" value="pozyx_node"/>
+    <arg name="config_file" default="anchors.yaml"/>
 
     <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-    	<rosparam command="load" file="$(find pozyx_ros)/config/anchors.yaml"/>
+    	<rosparam command="load" file="$(find pozyx_ros)/config/$(arg config_file)"/>
     </node>
 
     
