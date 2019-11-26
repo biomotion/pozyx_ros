@@ -55,6 +55,7 @@ add_message_files(
   DeviceInfo.msg
   DeviceList.msg
   DeviceRange.msg
+  DeviceRangeArray.msg
   TagPose.msg
 )
 
