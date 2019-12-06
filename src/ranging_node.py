@@ -87,6 +87,7 @@ class pozyx_node(object):
             return
 
         # print("publish range")
+        ranges.header.stamp = ranges.rangeArray[0].header.stamp
         self.pubRange.publish(ranges)
         self.lock = False
         if (rospy.Time.now()-self.last_search).to_sec() >= self.search_freq: # search every
