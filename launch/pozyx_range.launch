@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <launch>
     <arg name="pkg_name" value="pozyx_ros"/>
     <arg name="node_name" value="ranging_node"/>
