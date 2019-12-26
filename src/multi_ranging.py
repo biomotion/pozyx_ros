@@ -7,6 +7,7 @@ from pypozyx.tools.discovery import *
 from pypozyx.tools.version_check import *
 from pozyx_ros.msg import DeviceRange as Range
 from pozyx_ros.msg import DeviceRangeArray
+from std_msgs.msg import Bool
 import numpy as np
 
 class pozyx_node(object):
@@ -50,7 +51,10 @@ class pozyx_node(object):
             self.dest_device_list[param] = rospy.get_param(param)
 
         # Publisher
-        self.pubRange = rospy.Publisher('~range', DeviceRangeArray, queue_size=5)
+        self.pubRange = rospy.Publisher('ranges', DeviceRangeArray, queue_size=5)
+        self.pub_com = rospy.Publisher('/ranging', Bool, queue_size=1)
+        self.sub_com = rospy.Subscriber('/ranging', Bool, self.com_cb, queue_size=1)
+        self.ranging = False
 
         # thread lock
         # 0 => available, 1 => ranging, 2 => get device
@@ -64,22 +68,24 @@ class pozyx_node(object):
             return
         self.lock = True
 
-        #if self.device_list is None or len(self.device_list)==0:
-        #    rospy.loginfo("device list empty, do discovery")
-        #    self.lock = False
-        #    self.getDeviceList()
-        #    return
+        if self.ranging:
+            rospy.sleep(0.1)
 
+        data = Bool()
+        data.data = True
+        self.pub_com.publish(data)
         ranges = DeviceRangeArray()
         for device in self.dest_device_list:
             rospy.loginfo("ranging %s 0x%0.4x" % (device, self.dest_device_list[device]))
             device_range = DeviceRange()
             status = self.pozyx.doRanging(self.dest_device_list[device], device_range, None)
             if status == POZYX_SUCCESS:
+                print(device_range)
                 r = Range()
-                r.tag_id = device
+                r.tag_id = self.dest_device_list[device]
                 r.header.stamp = rospy.Time.now()
-                r.distance = device_range
+                r.distance = device_range.distance
+                rospy.loginfo("0x%0.4x : %d" %(self.dest_device_list[device], r.distance))
                 ranges.rangeArray.append(r)
             else:
                 rospy.logerr("pozyx ranging error")
@@ -94,8 +100,9 @@ class pozyx_node(object):
         ranges.header.stamp = ranges.rangeArray[0].header.stamp
         self.pubRange.publish(ranges)
         self.lock = False
-        #if (rospy.Time.now()-self.last_search).to_sec() >= self.search_freq: # search every
-        #    self.getDeviceList()
+        data = Bool()
+        data.data = False
+        self.pub_com.publish(data)
 
     def getDeviceList(self):
 
@@ -157,16 +164,22 @@ class pozyx_node(object):
             rospy.logerr(self.pozyx.getErrorMessage(error_code))
         else:
             rospy.logerr("error getting error msg")
+
+    def com_cb(self, msg):
+        self.ranging = msg.data
+
         
 
 if __name__ == '__main__':
     rospy.init_node('multi_ranging',anonymous=False)
-    #pozyx_node = pozyx_node()
+    freq = rospy.get_param("~ranging_freq")
 
+    timer = rospy.timer.Rate(freq)
     try:
         pozyx_node = pozyx_node()
         while not rospy.is_shutdown():
             pozyx_node.getDeviceRange()
+            timer.sleep()
     except RuntimeError:
         rospy.logfatal("get runtime error")
     except rospy.ROSInterruptException:
