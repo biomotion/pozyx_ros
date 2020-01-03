@@ -17,9 +17,14 @@ class pozyx_node(object):
         print self.anchors
         self.pub_poses = rospy.Publisher('~local_tag_pose', PoseStamped, queue_size=1)
 
-        self.pozyx = PozyxSerial(get_first_pozyx_serial_port())
-        self.pozyx.printDeviceInfo()
-        self.setup_anchors()
+        self.pozyx_port = get_first_pozyx_serial_port()
+        if self.pozyx_port is not None:
+            self.pozyx = PozyxSerial(self.pozyx_port)
+            self.pozyx.printDeviceInfo()
+            self.setup_anchors()
+
+        else:
+            rospy.logerr("No pozyx device found, did you connect pozyx to host?")
 
     def setup_anchors(self):
         #adding devices
@@ -47,6 +52,7 @@ class pozyx_node(object):
                 print "Translation:", str(position)
                 tag_pose = PoseStamped()
                 tag_pose.header.stamp = rospy.Time.now()
+                tag_pose.header.frame_id = "uwb_link"
                 tag_pose.pose.position.x = position.x
                 tag_pose.pose.position.y = position.y
                 tag_pose.pose.position.z = position.z

@@ -1,16 +1,18 @@
 <?xml version="1.0" ?>
 <launch>
     <arg name="pkg_name" value="pozyx_ros"/>
-    <arg name="node_name" value="pozyx_node"/>
+    <arg name="node_name" value="localize"/>
     <arg name="config_file" default="anchors.yaml"/>
 
-    <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+    <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="pozyx_node.py" output="screen">
     	<rosparam command="load" file="$(find pozyx_ros)/config/$(arg config_file)"/>
     </node>
 
-    
+    <node name="pozyx_tf_static" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_link uwb_link 1000" />
+
+    <!--
     <node name="pose_visualizer" pkg="$(arg pkg_name)" type="pose_visualization.py"
     	  output="screen" />
-    
+    -->
 
 </launch>
