@@ -11,27 +11,67 @@ anchors: #x, y, z are measured in mm
         py: 0
         pz: 1833
     -   # defines the direction of y so y should be positive
-        anchor_id: 0x6a12
-        px: 1718
-        py: 7260
-        pz: 1812
+        anchor_id: 0x670c
+        px: -400
+        py: 1780
+        pz: 1500
     -
         anchor_id: 0x6a2c
-        px: 10000
+        px: 14000
         py: 0
         pz: 1833
     -
         anchor_id: 0x6a24
-        px: 10000
-        py: 7800
+        px: 14000
+        py: -7800
         pz: 670
     -
         anchor_id: 0x6a15
         px: 6800
-        py: 7800
+        py: -7800
         px: 1735
     -
         anchor_id: 0x6a38
         px: -280
-        py: 5620
+        py: -5620
         pz: 400
+    -
+        anchor_id: 0x6a14
+        px: 20600
+        py: -5025
+        pz: 1200
+    -
+        anchor_id: 0x6a6e
+        px: 20600
+        py: -10795
+        pz: 1900
+    -
+        anchor_id: 0x6a79
+        px: -400
+        py: -8625
+        pz: 2300
+    -
+        anchor_id: 0x6a17
+        px: -2800
+        py: -6140
+        pz: 1700
+    -
+        anchor_id: 0x6a2f
+        px: -9300
+        py: -9025
+        pz: 2500
+    -
+        anchor_id: 0x6a05
+        px: -8000
+        py: -14835
+        pz: 1632
+    -
+        anchor_id: 0xa20
+        px: -8800
+        py: 490
+        pz: 500
+    -
+        anchor_id: 0x6a5d
+        px: -5000
+        py: 5380
+        pz: 2000
