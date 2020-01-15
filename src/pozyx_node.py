@@ -17,19 +17,42 @@ class pozyx_node(object):
         print self.anchors
         self.pub_poses = rospy.Publisher('~local_tag_pose', PoseStamped, queue_size=1)
 
-        self.pozyx_port = get_first_pozyx_serial_port()
-        if self.pozyx_port is not None:
-            self.pozyx = PozyxSerial(self.pozyx_port)
-            self.pozyx.printDeviceInfo()
-            self.setup_anchors()
+        self.my_id = int(rospy.get_param("~tag_id"), 16)
+        rospy.loginfo("my id: 0x%0.4x" % self.my_id)
 
-        else:
-            rospy.logerr("No pozyx device found, did you connect pozyx to host?")
+        self.port_list = get_pozyx_ports()
+        self.pozyx = None
+        if len(self.port_list) == 0:
+            rospy.logfatal("no device attached")
+            raise RuntimeError("No pozyx device attached")
+
+        for port in self.port_list:
+            try:
+                rospy.loginfo("trying " + str(port))
+                self.pozyx = PozyxSerial(port)
+                network_id = NetworkID()
+                self.pozyx.getNetworkId(network_id)
+                if network_id == self.my_id:
+                    rospy.loginfo("found my port: 0x%0.4x" % self.my_id)
+                    break
+                else:
+                    rospy.logwarn("%s is not my port" % str(network_id))
+                    self.pozyx.ser.close()
+                    self.pozyx = None
+            except SerialException:
+                rospy.logwarn("Got Serial Exception")
+        if self.pozyx == None:
+            rospy.logerr("No device found with certain ID")
+            raise RuntimeError("No device found with certain ID")
+
+        self.pozyx.printDeviceInfo() 
+        self.setup_anchors()
 
     def setup_anchors(self):
         #adding devices
         status = self.pozyx.clearDevices()
         for anchor in self.anchors:
+            rospy.loginfo(hex(anchor['anchor_id']))
             status &= self.pozyx.addDevice(DeviceCoordinates(anchor['anchor_id'], 1, Coordinates(anchor['px'], anchor['py'], anchor['pz'])))
         if len(self.anchors) > 4:
             status &= self.pozyx.setSelectionOfAnchors(PozyxConstants.ANCHOR_SELECT_AUTO, len(self.anchors))
@@ -43,7 +66,7 @@ class pozyx_node(object):
         while not rospy.is_shutdown():
             position = Coordinates()
             orientation = EulerAngles()
-            status = self.pozyx.doPositioning(position, dimension=PozyxConstants.DIMENSION_3D, algorithm=PozyxConstants.POSITIONING_ALGORITHM_TRACKING, remote_id = None)
+            status = self.pozyx.doPositioning(position, dimension=PozyxConstants.DIMENSION_3D, algorithm=PozyxConstants.POSITIONING_ALGORITHM_UWB_ONLY, remote_id = None)
             status &= self.pozyx.getEulerAngles_deg(orientation, remote_id = None)
 
             if status == POZYX_SUCCESS: # if get pose from pozyx
@@ -53,9 +76,9 @@ class pozyx_node(object):
                 tag_pose = PoseStamped()
                 tag_pose.header.stamp = rospy.Time.now()
                 tag_pose.header.frame_id = "uwb_link"
-                tag_pose.pose.position.x = position.x
-                tag_pose.pose.position.y = position.y
-                tag_pose.pose.position.z = position.z
+                tag_pose.pose.position.x = float(position.x)/1000
+                tag_pose.pose.position.y = float(position.y)/1000
+                tag_pose.pose.position.z = float(position.z)/1000
                 # print tag_pose.pose.position
                 rot = quaternion_from_euler(-radians(orientation.pitch), radians(orientation.roll), -radians(orientation.heading))
                 tag_pose.pose.orientation.x = rot[0]

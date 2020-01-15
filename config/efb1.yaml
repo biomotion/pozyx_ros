@@ -15,28 +15,28 @@ anchors: #x, y, z are measured in mm
         px: -400
         py: 1780
         pz: 1500
-    -
-        anchor_id: 0x6a2c
-        px: 14000
-        py: 0
-        pz: 1833
+    # -
+    #     anchor_id: 0x6a2c
+    #     px: 14000
+    #     py: 0
+    #     pz: 1833
     -
         anchor_id: 0x6a24
         px: 14000
-        py: -7800
+        py: -8700
         pz: 670
     -
         anchor_id: 0x6a15
         px: 6800
-        py: -7800
-        px: 1735
+        py: -8700
+        pz: 1735
     -
         anchor_id: 0x6a38
-        px: -280
+        px: -2800
         py: -5620
         pz: 400
     -
-        anchor_id: 0x6a14
+        anchor_id: 0x6a41
         px: 20600
         py: -5025
         pz: 1200
@@ -48,7 +48,7 @@ anchors: #x, y, z are measured in mm
     -
         anchor_id: 0x6a79
         px: -400
-        py: -8625
+        py: -9525
         pz: 2300
     -
         anchor_id: 0x6a17
@@ -66,12 +66,22 @@ anchors: #x, y, z are measured in mm
         py: -14835
         pz: 1632
     -
-        anchor_id: 0xa20
+        anchor_id: 0xa5d
         px: -8800
         py: 490
         pz: 500
     -
-        anchor_id: 0x6a5d
-        px: -5000
+        anchor_id: 0x6a26
+        px: -9800
         py: 5380
         pz: 2000
+    -
+        anchor_id: 0x6a5e
+        px: 0
+        py: 0
+        pz: 500
+    -
+        anchor_id: 0x6a20
+        px: 3820
+        py: -2095
+        pz: 2703
